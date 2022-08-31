@@ -1,24 +1,14 @@
-require('dotenv').config()
-
 import express from 'express';
+import createTabels from './config/dbTabelCreate';
 const app = express();
-const dataBase = require('./config/dbConnection')
+
 app.use(express.json()) // to accpet json
 
-// db connection
-const createUser = require('./models/users');
-try {
-    dataBase.authenticate()
-        .then(() => {
-            createUser.sync();
-        })
-    console.log('dataBase Connection successfull.');
-} catch (error) {
-    console.error('Unable to connect to the database:', error);
-}
+// db connection function
+createTabels()
 
-// NextJs project
-const appRouter = require('./routes/mainRoute')
+// BillingApp Project
+import appRouter from './routes/mainRoute';
 app.use('/api', appRouter)
 
 app.listen(7000, () => console.log("Server Started"))

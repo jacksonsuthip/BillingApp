@@ -1,11 +1,26 @@
-// const userSchema = require('../../models/user')
-import express, { Request, Response, NextFunction } from 'express';
+import createUserModel from '../../models/users'
+import { Request, Response, NextFunction } from 'express';
 
-exports.createUser = (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response) => {
+
     try {
-        res.status(201).json(req.body)
-        console.log("=", req.body);
+
+        
+        await createUserModel.create({ lastName: "Doe" })
+        .then(() => {
+            res.status(201).send('OK');
+        })
+        .catch((err) => {
+            console.log(err.parent.detail);
+        })
+
+        // res.status(201).json(req.body)
+        // console.log("--=", req.body);
     } catch (err: any) {
         res.status(400).json({ message: err.message })
     }
+
+    
 }
+
+export default createUser;
