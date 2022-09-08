@@ -11,7 +11,7 @@ const dataBase = new Sequelize(
     password,
     // 'testApp',
     // 'postgres',
-    // 'amadis',
+    // '****',
     {
         host: 'localhost',
         dialect: 'postgres'  /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */

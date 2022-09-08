@@ -1,8 +1,10 @@
 import express from 'express';
 import createTabels from './config/dbTabelCreate';
 const app = express();
+const cors = require('cors');
 
 app.use(express.json()) // to accpet json
+app.use(cors())
 
 // db connection function
 createTabels()
