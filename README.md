@@ -2,4 +2,4 @@
 
 WELCOME TO DEVELOPMENT
 
-use yarn start to open app
+use [yarn start] to open app
