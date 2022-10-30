@@ -28,9 +28,8 @@ export default function NewUser() {
                 userName: values.userName,
                 password: values.password,
                 userExpiryDate: values.date.format('YYYY-MM-DD'),
-                //             isAdmin : true
+                // isAdmin : true
             });
-            console.log('create: ', create);
             message.success('Registration Success . . .');
             getUsers()
             form.resetFields()
@@ -156,9 +155,8 @@ export default function NewUser() {
                                     <Form.Item
                                         name="code"
                                         noStyle
-                                        rules={[{ required: true, message: 'Province is required' }]}
                                     >
-                                        <Select style={{ width: '20%' }}>
+                                        <Select style={{ width: '20%' }} defaultValue="+91">
                                             <Option value="+1">+1</Option>
                                             <Option value="+91">+91</Option>
                                         </Select>
@@ -219,9 +217,7 @@ export default function NewUser() {
                 </Col>
                 <Col span={1}></Col>
                 <Col span={11}>
-                    <Card
-                        title="Users List"
-                    >
+                    <Card title="Users List" >
                         <Table pagination={{ pageSize: 5 }} dataSource={allUsers} columns={columns} />
                     </Card>
                 </Col>

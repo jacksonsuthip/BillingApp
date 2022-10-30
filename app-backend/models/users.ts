@@ -23,9 +23,9 @@ const createUserModel = dataBase.define('users', {
     },
     email: {
         type: sequelizer.STRING,
-        // validate:{
-        //     isEmail: true
-        // }
+        validate: {
+            isEmail: true
+        }
     },
     user_name: {
         type: sequelizer.STRING,
