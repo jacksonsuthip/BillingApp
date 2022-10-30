@@ -12,7 +12,7 @@ function UserHeader() {
   const menuClick = (val: any) => {
     setMenuKey(val.key)
   }
-  console.log(menuKey)
+
   return (
     <>
       <div

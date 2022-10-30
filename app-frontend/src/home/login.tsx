@@ -1,13 +1,40 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Row, Col, Card, Form, Input, Button, PageHeader } from 'antd';
+import axios from 'axios';
+import { useState } from 'react';
 import loginSVG from '../svg/loginSVG.svg'
 
 function Login() {
 
   const [form] = Form.useForm();
+  const [uValu, setsuccess] = useState<{ help: string, success: any }>({ help: "", success: "" })
+  const [btnClick, setBtnClick] = useState(false)
+
 
   const onFinish = (val: any) => {
     console.log(val)
+  }
+  const checkUname = async (uNameValue: string) => {
+    await axios.get('http://localhost:7000/api/user/uname',
+      {
+        params:
+          { uname: uNameValue }
+      })
+      .then((res) => {
+        if (!res.data.length) {
+          setsuccess({
+            help: "Can't find this Username",
+            success: "warning"
+          })
+          setBtnClick(true)
+        } else {
+          setsuccess({
+            help: '',
+            success: "success"
+          })
+          setBtnClick(false)
+        }
+      })
   }
   return (
     <div>
@@ -15,8 +42,8 @@ function Login() {
         ghost={false}
         title="Welcom to Development"
         subTitle=""
-        style={{ boxShadow: "0px 6px 6px 1px #dfe6e9", zIndex:"1", width: "100%" }}
-        // extra={[]}
+        style={{ boxShadow: "0px 6px 6px 1px #dfe6e9", zIndex: "1", width: "100%" }}
+      // extra={[]}
       >
       </PageHeader>
       <Row>
@@ -44,12 +71,12 @@ function Login() {
                     message: 'Please input your Username!',
                   },
                 ]}
-              // validateStatus={uValu?.success} hasFeedback
-              // help={uValu?.help}
+                validateStatus={uValu?.success} hasFeedback
+                help={uValu?.help}
               >
                 <Input prefix={<UserOutlined />}
                   placeholder="Username"
-                // onBlur={e => checkUname(e.target.value)}
+                  onBlur={e => checkUname(e.target.value)}
                 />
               </Form.Item>
               <Form.Item
@@ -68,7 +95,7 @@ function Login() {
                 />
               </Form.Item>
               <Form.Item>
-                <Button type="primary" htmlType="submit" >
+                <Button type="primary" htmlType="submit" disabled={btnClick}>
                   Log in
                 </Button>
                 &nbsp;&nbsp;Or&nbsp;&nbsp;
