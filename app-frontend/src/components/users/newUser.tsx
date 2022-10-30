@@ -3,10 +3,18 @@ import axios from 'axios';
 import { useEffect, useState } from "react";
 
 export default function NewUser() {
+    const [form] = Form.useForm();
     const { Option } = Select;
-    // const [uValu, setsuccess] = useState({})
+    const [uValu, setsuccess] = useState<{ help: string, success: any }>({
+        help: "",
+        success: ""
+    })
     const [btnClick, setBtnClick] = useState(false)
     const [allUsers, setAllUsers] = useState([])
+
+    useEffect(() => {
+        getUsers()
+    }, [])
 
     const onFinish = async (values: any) => {
         try {
@@ -24,49 +32,69 @@ export default function NewUser() {
             });
             console.log('create: ', create);
             message.success('Registration Success . . .');
-            // Router.push("/SignUp-LogIn/login")
+            getUsers()
+            form.resetFields()
         } catch (err) {
             console.log('err: ', err);
             message.error('Faild to Register');
         }
     };
 
-    // function checkUname(val) {
-    //     axios.post('http://localhost:7000/api/user/uname', { name: val })
-    //         .then((res) => {
-    //             if (res.data) {
-    //                 setsuccess({ help: "Please try different username", success: "warning" })
-    //                 setBtnClick(true)
-    //             } else {
-    //                 setsuccess({ success: "success" })
-    //                 setBtnClick(false)
-    //             }
-    //         })
-    // }
-    useEffect(() => {
-        axios.get('http://localhost:7000/api/user/get-all')
+    const getUsers = async () => {
+        await axios.get('http://localhost:7000/api/user/get-all')
             .then((res) => {
-                let setValue = res.data.map((val: any) => {
+                let setValue = res.data.map((val: any, i: number) => {
                     return {
                         key: val.id,
                         userName: val.name,
-                        phno: val.ph_no
+                        phno: val.ph_no,
+                        slno: i + 1,
                     }
                 })
                 setAllUsers(setValue)
             })
-    }, [])
+    }
+    const checkUname = async (uNameValue: string) => {
+        await axios.get('http://localhost:7000/api/user/uname',
+            {
+                params:
+                    { uname: uNameValue }
+            })
+            .then((res) => {
+                if (res.data.length) {
+                    setsuccess({
+                        help: "Please try different username",
+                        success: "warning"
+                    })
+                    setBtnClick(true)
+                } else {
+                    setsuccess({
+                        help: '',
+                        success: "success"
+                    })
+                    setBtnClick(false)
+                }
+            })
+    }
 
     const columns = [
+        {
+            title: 'Sl.No',
+            dataIndex: 'slno',
+            key: 'slno',
+            width: '15%'
+        },
         {
             title: 'Name',
             dataIndex: 'userName',
             key: 'userName',
+            width: '40%'
         },
         {
             title: 'Phone No',
             dataIndex: 'phno',
             key: 'phno',
+            width: '45%'
         }
     ];
     return (
@@ -82,6 +110,7 @@ export default function NewUser() {
                         title="Add User"
                     >
                         <Form
+                            form={form}
                             name="normal_login"
                             labelCol={{ span: 5 }}
                             wrapperCol={{ span: 15 }}
@@ -129,12 +158,12 @@ export default function NewUser() {
                                         noStyle
                                         rules={[{ required: true, message: 'Province is required' }]}
                                     >
-                                        <Select >
+                                        <Select style={{ width: '20%' }}>
                                             <Option value="+1">+1</Option>
                                             <Option value="+91">+91</Option>
                                         </Select>
                                     </Form.Item>
-                                    <Form.Item name="phno" >
+                                    <Form.Item name="phno" style={{ width: '80%' }} >
                                         <Input placeholder="Phone No" />
                                     </Form.Item>
                                 </Input.Group>
@@ -145,7 +174,7 @@ export default function NewUser() {
                                     message: 'Please input Date!',
                                 }]}
                             >
-                                <DatePicker placeholder="Date" />
+                                <DatePicker style={{ width: '100%' }} placeholder="Date" />
                             </Form.Item>
                             <Form.Item
                                 label="UserName"
@@ -156,10 +185,10 @@ export default function NewUser() {
                                         message: 'Please input your UserName!',
                                     },
                                 ]}
-                            // validateStatus={uValu?.success} hasFeedback
-                            // help={uValu?.help}
+                                validateStatus={uValu?.success} hasFeedback
+                                help={uValu?.help}
                             >
-                                <Input placeholder="UserName" />
+                                <Input onBlur={e => checkUname(e.target.value)} placeholder="UserName" />
                             </Form.Item>
                             <Form.Item
                                 label="Password"
@@ -193,7 +222,7 @@ export default function NewUser() {
                     <Card
                         title="Users List"
                     >
-                        <Table dataSource={allUsers} columns={columns} />
+                        <Table pagination={{ pageSize: 5 }} dataSource={allUsers} columns={columns} />
                     </Card>
                 </Col>
             </Row>
