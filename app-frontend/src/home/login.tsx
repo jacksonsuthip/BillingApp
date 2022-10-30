@@ -1,5 +1,5 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Row, Col, Card, Form, Input, Button, PageHeader } from 'antd';
+import { Row, Col, Card, Form, Input, Button, PageHeader, message } from 'antd';
 import axios from 'axios';
 import { useState } from 'react';
 import loginSVG from '../svg/loginSVG.svg'
@@ -8,12 +8,8 @@ function Login() {
 
   const [form] = Form.useForm();
   const [uValu, setsuccess] = useState<{ help: string, success: any }>({ help: "", success: "" })
-  const [btnClick, setBtnClick] = useState(false)
+  const [warning, setWarning] = useState<any>()
 
-
-  const onFinish = (val: any) => {
-    console.log(val)
-  }
   const checkUname = async (uNameValue: string) => {
     await axios.get('http://localhost:7000/api/user/uname',
       {
@@ -26,16 +22,44 @@ function Login() {
             help: "Can't find this Username",
             success: "warning"
           })
-          setBtnClick(true)
         } else {
           setsuccess({
             help: '',
             success: "success"
           })
-          setBtnClick(false)
         }
       })
   }
+  const onFinish = async (values: any) => {
+    try {
+      const login = await axios.get('http://localhost:7000/api/user/login',
+        {
+          params: {
+            uname: values.username,
+            password: values.password
+          }
+        });
+      if (login.data.length === 1) {
+        localStorage.setItem("uId", JSON.stringify(login.data))
+        // await axios.post('http://localhost:7000/api/user/login/save', {
+        //   id: login.data[0]._id,
+        //   name: login.data[0].uName,
+        //   // ip: ip
+        // })
+        message.success('Login Success . . .');
+        setWarning('success')
+        // Router.push("/dashboard/profileDetails")
+      } else {
+        message.warning('Username or Password is incorrect !');
+        setWarning('warning')
+        form.setFieldsValue({ password: '' })
+      }
+    } catch (err) {
+      console.log('err: ', err);
+      message.error('Faild to login');
+    }
+  };
+
   return (
     <div>
       <PageHeader
@@ -87,7 +111,7 @@ function Login() {
                     message: 'Please input your Password!',
                   },
                 ]}
-              // validateStatus={warning} hasFeedback
+                validateStatus={warning} hasFeedback
               >
                 <Input prefix={<LockOutlined />}
                   type="password"
@@ -95,7 +119,7 @@ function Login() {
                 />
               </Form.Item>
               <Form.Item>
-                <Button type="primary" htmlType="submit" disabled={btnClick}>
+                <Button type="primary" htmlType="submit">
                   Log in
                 </Button>
                 &nbsp;&nbsp;Or&nbsp;&nbsp;

@@ -11,4 +11,7 @@ router.get('/user/get-all', getAllUsers)
 import getUserName from '../routes/user/getUserName'
 router.get('/user/uname', getUserName)
 
+import userLogin from '../routes/user/userLogin'
+router.get('/user/login', userLogin)
+
 export default router;
